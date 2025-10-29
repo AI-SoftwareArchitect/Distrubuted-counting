@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: rc_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  app1:
+    build: .
+    container_name: rc_app1
+    volumes:
+      - counter_data:/data
+    environment:
+      - INSTANCE_NAME=app1
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+    ports:
+      - "8000:8000"
+
+  app2:
+    build: .
+    container_name: rc_app2
+    volumes:
+      - counter_data:/data
+    environment:
+      - INSTANCE_NAME=app2
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+    ports:
+      - "8001:8000" # host:container -> farklı host port
+
+volumes:
+  counter_data:
+  redis-data:
